@@ -1,4 +1,5 @@
 // src/lib/services/authService.ts
+import axios from "axios";
 import axiosInstance from "../instance/axios-instance";
 
 // Forgot Password
@@ -33,10 +34,13 @@ export const verifyOtp = async (
     });
 
     return { success: true, data: response.data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = axios.isAxiosError(error)
+      ? error.response?.data?.message
+      : "Verification failed";
     return {
       success: false,
-      message: error.response?.data?.message || "Verification failed",
+      message: message || "Verification failed",
     };
   }
 };
@@ -69,13 +73,13 @@ export const resendForgotOtp = async (tokenFromURL: string) => {
 // Reset Password
 export const resetPassword = async (
   newPassword: string,
-  repeatNewPassword: string,
+  _repeatNewPassword: string, // Kept for backward compatibility with hook calls, but unused in body
   tokenFromURL: string,
 ) => {
   try {
     const response = await axiosInstance.post(
       "/auth/reset-password",
-      { newPassword, repeatNewPassword },
+      { newPassword },
       {
         headers: {
           _customToken: tokenFromURL,
@@ -84,10 +88,13 @@ export const resetPassword = async (
     );
 
     return { success: true, data: response.data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = axios.isAxiosError(error)
+      ? error.response?.data?.message
+      : "Reset password failed";
     return {
       success: false,
-      message: error.response?.data?.message || "Reset password failed",
+      message: message || "Reset password failed",
     };
   }
 };

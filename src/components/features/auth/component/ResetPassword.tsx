@@ -3,9 +3,8 @@ import { useState } from "react";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 import useAuth from "@/lib/hooks/useAuth";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 export default function ResetPassword() {
   const [showPassword1, setShowPassword1] = useState(false);
@@ -14,6 +13,8 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const { handleResetPassword, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") || "";
 
   // Handle Save
   const handleSave = async () => {
@@ -22,7 +23,7 @@ export default function ResetPassword() {
       return;
     }
 
-    const res = await handleResetPassword(newPassword, confirmPassword);
+    const res = await handleResetPassword(newPassword, confirmPassword, token);
     if (res.success) {
       toast.success("Password reset successfully!");
       router.push("/login");
