@@ -21,7 +21,7 @@ export default function RootLayout({
       <Sidebar />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col ml-64">
+      <div className="flex-1 flex flex-col ml-70">
         {/* Header */}
         <div className="sticky top-0 z-10 ">
           <DashboardHeader />

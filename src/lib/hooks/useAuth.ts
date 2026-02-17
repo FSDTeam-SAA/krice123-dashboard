@@ -87,13 +87,17 @@ export default function useAuth() {
   const handleResetPassword = async (
     newPassword: string,
     confirmPassword: string,
+    token?: string,
   ) => {
     setLoading(true);
     setError(null);
 
-    // Get token from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const tokenFromURL = urlParams.get("token") || "";
+    // Get token from URL if not provided directly
+    let tokenFromURL = token;
+    if (!tokenFromURL) {
+      const urlParams = new URLSearchParams(window.location.search);
+      tokenFromURL = urlParams.get("token") || "";
+    }
 
     if (!tokenFromURL) {
       setError("Invalid or missing token");
