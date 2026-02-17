@@ -1,37 +1,54 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Bell, KeyIcon, LogOut, Menu, User2Icon } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { LogOut, Menu } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
-import HeaderTitle from "../Dashboard/ReusableComponents/HeaderTitle";
- 
+import HeaderTitle from "./HeaderTitle";
+
+interface UserWithNames {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  image?: string;
+}
 
 export default function DashboardHeader() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
 
-  const loading = false;
+  const user = session?.user as UserWithNames;
+  const firstName = user?.firstName || "";
+  const lastName = user?.lastName || "";
+  const email = user?.email || "";
+
+  // Extract first word of first name and last word of last name
+  const displayFirstName = firstName.split(" ")[0] || "";
+  const displayLastName = lastName.split(" ").pop() || "";
+  const fullName = `${firstName} ${lastName}`.trim();
+
+  const userInitials =
+    firstName && lastName
+      ? `${firstName[0]}${lastName[0]}`.toUpperCase()
+      : email.slice(0, 2).toUpperCase() || "??";
 
   const handleLogout = () => {
     signOut();
-    setLogoutDialogOpen(false);
   };
 
   if (loading) {
     return (
-      <div className="flex items-center space-x-4 p-5 bg-white rounded-md">
+      <div className="flex items-center space-x-4 p-5 bg-white rounded-md border-b">
         <Skeleton className="h-12 w-12 rounded-full" />
         <div className="space-y-2">
           <Skeleton className="h-4 w-[250px]" />
@@ -42,7 +59,7 @@ export default function DashboardHeader() {
   }
 
   return (
-    <header className="w-full h-[100px] bg-white shadow-sm border-b px-4 py-3 flex items-center justify-between">
+    <header className="w-full h-[100px] bg-white shadow-sm border-b px-8 py-3 flex items-center justify-between">
       {/* Left: Logo + Sidebar Toggle */}
       <div className="flex items-center gap-3">
         <button
@@ -57,42 +74,44 @@ export default function DashboardHeader() {
 
       {/* Right side */}
       <div className="flex items-center gap-4">
-        {/* User Avatar */}
-        <Avatar className="cursor-pointer">
-          <AvatarImage src="/avatar.png" alt="User Avatar" />
-          <AvatarFallback>
-            <User2Icon />
-          </AvatarFallback>
-        </Avatar>
-      </div>
+        {/* User Info */}
+        <div className="text-right hidden sm:block">
+          <p className="text-sm font-bold text-primary">
+            {displayFirstName} {displayLastName}
+          </p>
+          <p className="text-xs text-gray-500">{email}</p>
+        </div>
 
-      {/* Logout Dialog */}
-      <Dialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
-        <DialogTrigger asChild>
-          <button style={{ display: "none" }}></button>
-        </DialogTrigger>
-
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Confirm Logout</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to log out?
-            </DialogDescription>
-          </DialogHeader>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setLogoutDialogOpen(false)}
+        {/* User Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar className="cursor-pointer border-2 border-primary/10 hover:border-primary/30 transition-all">
+              <AvatarImage src={user?.image || ""} alt={fullName} />
+              <AvatarFallback className="bg-primary/5 text-primary font-bold">
+                {userInitials}
+              </AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{fullName}</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {email}
+                </p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="text-destructive focus:text-destructive cursor-pointer"
             >
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleLogout}>
-              Log Out
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Logout</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }

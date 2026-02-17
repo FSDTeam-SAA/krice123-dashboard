@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Ship, LogOut, HardDrive, ShoppingBasket, LayoutDashboard, UsersRound, TvMinimalPlay, Settings, ClockPlus, BowArrow } from "lucide-react";
+import { LogOut, ShoppingBasket, LayoutDashboard, UsersRound, TvMinimalPlay, Settings, BowArrow } from "lucide-react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
 import {
@@ -19,28 +19,28 @@ import Image from "next/image";
 
 const navigation = [
   { name: "Dashboard Overview", href: "/", icon: LayoutDashboard },
-  { name: "Contact Management", href: "/dealers", icon: UsersRound },
+  { name: "Quotation Management", href: "/quotation-management", icon: UsersRound },
   {
-    name: "Content Management",
-    href: "/submission-forms",
+    name: "Past Projects Management",
+    href: "/past-projects",
     icon: TvMinimalPlay,
   },
   {
-    name: "Service Management",
-    href: "/submission-forms",
+    name: "Contact Management",
+    href: "/contact-management",
     icon: ShoppingBasket,
   },
   {
-    name: "Career Management",
-    href: "/submission-forms",
+    name: "Service Management",
+    href: "/service-management",
     icon: BowArrow
   },
   {
-    name: "Performance & Reporting",
-    href: "/submission-forms",
-    icon: ClockPlus,
+    name: "Our Team Management",
+    href: "/our-team",
+    icon: UsersRound,
   },
-  { name: "Settings", href: "/submission-forms", icon: Settings },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export default function Sidebar() {
@@ -54,15 +54,15 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="flex h-screen w-64 flex-col bg-[#FFFFFF] border-r border-gray-200 fixed">
+    <div className="flex h-screen w-70 flex-col bg-[#FFFFFF] border-r border-gray-200 fixed">
       {/* Logo */}
       <div className="flex  items-center py-5 justify-center px-6">
         <Link href="/" className="flex items-center ">
           <Image
-            src="/images/dashboard_logo.png"
+            src="/images/logo.png"
             alt="Logo"
-            width={100}
-            height={100}
+            width={200}
+            height={90}
           />
         </Link>
       </div>
@@ -83,8 +83,8 @@ export default function Sidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-lg p-3 text-base leading-[150%] tracking-[0%] font-semibold transition-colors",
                 isActive
-                  ? "bg-[#005696] text-[#FFFFFF] font-bold text-[16px]"
-                  : "text-[#111111] hover:bg-[#005696] hover:text-[#FFFFFF] font-semibold",
+                  ? "bg-primary text-[#FFFFFF] font-bold text-[16px]"
+                  : "text-[#111111] hover:bg-primary hover:text-[#FFFFFF] font-semibold",
               )}
             >
               <item.icon className="h-5 w-5" />

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import useAuth from "@/lib/hooks/useAuth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 export default function VerifyOTP() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -50,7 +49,10 @@ export default function VerifyOTP() {
     if (res?.success) {
       toast.success("OTP verified successfully!");
 
-      const resetToken = res.data?.resetToken;
+      const resetToken =
+        res.data?.data?.accessToken ||
+        res.data?.data?.resetToken ||
+        res.data?.resetToken;
 
       setTimeout(() => {
         router.push(
@@ -62,26 +64,9 @@ export default function VerifyOTP() {
     }
   };
 
-  //  Resend OTP
-  const handleResend = async () => {
-    if (!canResend) return;
-
-    const res = await handleResendOtp();
-
-    if (res?.success) {
-      toast.success("OTP sent again successfully ✔");
-    } else {
-      toast.error("Failed to resend OTP");
-    }
-
-    setTimer(30);
-    setCanResend(false);
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAF8F6]">
       <div className="bg-white w-full max-w-xl rounded-2xl shadow-md p-10">
- 
         <div className="text-left">
           <h2 className="text-3xl font-semibold text-secondary mb-4">
             Verify Email
