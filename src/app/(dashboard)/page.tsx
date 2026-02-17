@@ -1,9 +1,8 @@
-import Overview from "@/components/Dashboard/Overview/Overview";
-
+import Dashboard from '@/components/features/dashboard/component/Dashboard'
 export default function page() {
   return (
     <div>
-      <Overview />
+      <Dashboard />
     </div>
-  );
+  )
 }

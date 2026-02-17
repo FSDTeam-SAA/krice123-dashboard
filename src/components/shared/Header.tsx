@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LogOut, Menu } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
-import HeaderTitle from "../Dashboard/ReusableComponents/HeaderTitle";
+import HeaderTitle from "./HeaderTitle";
 
 interface UserWithNames {
   firstName?: string;
