@@ -8,7 +8,7 @@ interface HeaderTitleProps {
 export default function HeaderTitle({ title, subtitle }: HeaderTitleProps) {
   return (
     <div className="flex flex-col">
-      <h1 className="text-2xl text-[#07589E] font-semibold">{title}</h1>
+      <h1 className="text-2xl text-primary font-semibold">{title}</h1>
       {subtitle && <p className="text-sm text-gray-400">{subtitle}</p>}
     </div>
   );
