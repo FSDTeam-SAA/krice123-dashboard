@@ -20,3 +20,13 @@ export const getQuotationManagement = async (
     throw error;
   }
 };
+
+
+// delete api
+export const deleteQuotationManagement = async (id: string): Promise<void> => {
+  try {
+    await axiosInstance.delete(`/quotations/${id}`);
+  } catch (error) {
+    throw error;
+  }
+};

@@ -1,13 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import { useQuotationManagement } from "../hooks/useQuotationManagement";
+import {
+  useQuotationManagement,
+  useDeleteQuotationManagement,
+} from "../hooks/useQuotationManagement";
 import HeaderTitle from "@/components/shared/HeaderTitle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { Eye, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import QuotationViewModal from "./QuotationViewModal";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { Quotation } from "../types/quotation.types";
+import { toast } from "sonner";
 
 export default function QuotationManagement() {
   const [page, setPage] = useState(1);
@@ -19,12 +24,19 @@ export default function QuotationManagement() {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Delete state
+  const [quotationToDelete, setQuotationToDelete] = useState<string | null>(
+    null,
+  );
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const { mutate: deleteQuotation, isPending: isDeleting } =
+    useDeleteQuotationManagement();
+
   const handleViewDetails = (quotation: Quotation) => {
     setSelectedQuotation(quotation);
     setIsModalOpen(true);
   };
-
-  console.log(data);
 
   const formatData = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -38,6 +50,31 @@ export default function QuotationManagement() {
     if (data?.meta && newPage >= 1 && newPage <= data.meta.totalPages) {
       setPage(newPage);
     }
+  };
+
+  // delete handlers
+  const handleDeleteClick = (id: string) => {
+    setQuotationToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!quotationToDelete) return;
+
+    deleteQuotation(quotationToDelete, {
+      onSuccess: () => {
+        toast.success("Quotation deleted successfully!");
+        setIsDeleteModalOpen(false);
+        setQuotationToDelete(null);
+      },
+      onError: (error) => {
+        let errorMessage = "Failed to delete quotation. Please try again.";
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+        toast.error(errorMessage);
+      },
+    });
   };
 
   return (
@@ -142,12 +179,18 @@ export default function QuotationManagement() {
                         <td className="px-6 py-4 text-sm text-gray-600 text-center">
                           {formatData(item.createdAt)}
                         </td>
-                        <td className="px-6 py-4 text-center">
+                        <td className="px-6 py-4 text-center flex items-center gap-2">
                           <button
                             onClick={() => handleViewDetails(item)}
                             className="p-2 bg-primary text-white rounded-md hover:bg-opacity-90 transition-all inline-flex items-center justify-center cursor-pointer"
                           >
                             <Eye size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(item._id)}
+                            className="p-2 bg-red-500 text-white rounded-md hover:bg-opacity-90 transition-all inline-flex items-center justify-center cursor-pointer"
+                          >
+                            <Trash2 size={18} />
                           </button>
                         </td>
                       </tr>
@@ -241,6 +284,13 @@ export default function QuotationManagement() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         quotation={selectedQuotation}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        isLoading={isDeleting}
       />
     </div>
   );
