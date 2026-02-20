@@ -1,7 +1,11 @@
 // src/components/features/pastProjects/hooks/usePastProjects.ts
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { deletePastProject, getPastProjects } from "../api/pastProjects.api";
+import {
+  createPastProject,
+  deletePastProject,
+  getPastProjects,
+} from "../api/pastProjects.api";
 
 export const usePastProjects = (page: number = 1, limit: number = 10) => {
   return useQuery({
@@ -17,6 +21,17 @@ export const useDeletePastProjects = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deletePastProject(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["past-projects"] });
+    },
+  });
+};
+
+// create hook
+export const useCreatePastProject = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (formData: FormData) => createPastProject(formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["past-projects"] });
     },

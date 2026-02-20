@@ -21,3 +21,15 @@ export const getPastProjects = async (
 export const deletePastProject = async (id: string): Promise<void> => {
   await axiosInstance.delete(`/past-projects/${id}`);
 };
+
+// create past project
+export const createPastProject = async (
+  formData: FormData,
+): Promise<PastProjectResponse> => {
+  const response = await axiosInstance.post("/past-projects", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};

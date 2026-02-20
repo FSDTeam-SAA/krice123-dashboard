@@ -6,9 +6,11 @@ import {
   useDeletePastProjects,
 } from "../hooks/usePastProjects";
 import HeaderTitle from "@/components/shared/HeaderTitle";
-import { Eye, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
+import { Eye, ChevronLeft, ChevronRight, Trash2, Plus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import ViewProjectModal from "./ViewProjectModal";
+import AddProjectModal from "./AddProjectModal";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { PastProject } from "../types/pastProjects.types";
 import { toast } from "sonner";
@@ -23,6 +25,7 @@ export default function PastProjects() {
     null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Delete state
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
@@ -77,7 +80,19 @@ export default function PastProjects() {
 
   return (
     <div className="p-6 space-y-6">
-      <HeaderTitle title="Past Projects" subtitle="Dashboard > Past Projects" />
+      <div className="flex items-center justify-between">
+        <HeaderTitle
+          title="Past Projects"
+          subtitle="Dashboard > Past Projects"
+        />
+        <Button
+          onClick={() => setIsAddModalOpen(true)}
+          className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2"
+        >
+          <Plus size={18} />
+          Add New Project
+        </Button>
+      </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
@@ -104,7 +119,7 @@ export default function PastProjects() {
             <tbody className="divide-y divide-gray-50">
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, idx) => (
-                  <tr key={`project-skeleton-${idx}`}>
+                  <tr key={`project-table-skeleton-${idx}`}>
                     <td className="px-6 py-4">
                       <Skeleton className="h-12 w-20 rounded-md" />
                     </td>
@@ -265,6 +280,11 @@ export default function PastProjects() {
             );
           })()}
       </div>
+
+      <AddProjectModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+      />
 
       <ViewProjectModal
         isOpen={isModalOpen}
