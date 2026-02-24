@@ -13,19 +13,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import TiptapEditor from "@/components/shared/TiptapEditor";
 
-import { useCreatePastProject } from "../hooks/usePastProjects";
+import { useUpdateService } from "../hooks/useServiceManagement";
 import { toast } from "sonner";
-import { Loader2, Upload, X, Image as ImageIcon } from "lucide-react";
+import { Loader2, Upload, X, Pencil } from "lucide-react";
 import Image from "next/image";
+import { ServiceManagement } from "../types/serviceManagement.types";
 
-interface AddProjectModalProps {
+interface EditServiceModalProps {
   readonly isOpen: boolean;
   readonly onClose: () => void;
+  readonly service: ServiceManagement | null;
 }
 
 interface ImageState {
   file: File | null;
   preview: string;
+  isExisting?: boolean;
 }
 
 const ImageUploadField = ({
@@ -43,18 +46,18 @@ const ImageUploadField = ({
     const file = e.target.files?.[0];
     if (file) {
       const preview = URL.createObjectURL(file);
-      setter({ file, preview });
+      setter({ file, preview, isExisting: false });
     }
   };
 
   const removeImage = () => {
-    setter({ file: null, preview: "" });
+    setter({ file: null, preview: "", isExisting: false });
   };
 
   return (
     <div className="space-y-2">
       <Label htmlFor={id} className="text-sm font-medium text-gray-700">
-        {label} <span className="text-red-500">*</span>
+        {label}
       </Label>
       <div className="relative">
         {state.preview ? (
@@ -68,9 +71,9 @@ const ImageUploadField = ({
             <button
               type="button"
               onClick={removeImage}
-              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
             >
-              <X size={16} />
+              <X size={14} />
             </button>
           </div>
         ) : (
@@ -78,10 +81,10 @@ const ImageUploadField = ({
             htmlFor={id}
             className="flex flex-col items-center justify-center aspect-video rounded-lg border-2 border-dashed border-gray-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all"
           >
-            <div className="flex flex-col items-center justify-center py-4">
-              <Upload className="h-8 w-8 text-gray-400 mb-2" />
-              <p className="text-xs text-gray-500">
-                Click to upload {label.toLowerCase()}
+            <div className="flex flex-col items-center justify-center py-4 text-center px-4">
+              <Upload className="h-6 w-6 text-gray-400 mb-2" />
+              <p className="text-[10px] text-gray-500 font-medium">
+                Click to update {label.toLowerCase()}
               </p>
             </div>
             <input
@@ -98,80 +101,66 @@ const ImageUploadField = ({
   );
 };
 
-export default function AddProjectModal({
+export default function EditServiceModal({
   isOpen,
   onClose,
-}: AddProjectModalProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-
-  const [thumbnailImage, setThumbnailImage] = useState<ImageState>({
+  service,
+}: EditServiceModalProps) {
+  const [title, setTitle] = useState(service?.title ?? "");
+  const [description, setDescription] = useState(service?.description ?? "");
+  const [imageState, setImageState] = useState<ImageState>({
     file: null,
-    preview: "",
-  });
-  const [remodelImage, setRemodelImage] = useState<ImageState>({
-    file: null,
-    preview: "",
-  });
-  const [pastImage, setPastImage] = useState<ImageState>({
-    file: null,
-    preview: "",
+    preview: service?.image ?? "",
+    isExisting: !!service,
   });
 
-  const { mutate: createProject, isPending } = useCreatePastProject();
-
-  const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setThumbnailImage({ file: null, preview: "" });
-    setRemodelImage({ file: null, preview: "" });
-    setPastImage({ file: null, preview: "" });
-  };
+  const { mutate: updateServiceMutation, isPending } = useUpdateService();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !title ||
-      !description ||
-      !thumbnailImage.file ||
-      !remodelImage.file ||
-      !pastImage.file
-    ) {
-      toast.error("Please fill in all fields and upload all images.");
+    if (!service) return;
+
+    if (!title || !description) {
+      toast.error("Title and description are required.");
       return;
     }
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("thumbnailImage", thumbnailImage.file);
-    formData.append("remodelImage", remodelImage.file);
-    formData.append("pastImage", pastImage.file);
 
-    createProject(formData, {
-      onSuccess: () => {
-        toast.success("Project created successfully!");
-        onClose();
-        resetForm();
+    if (imageState.file) {
+      formData.append("image", imageState.file);
+    }
+
+    updateServiceMutation(
+      { id: service._id, formData },
+      {
+        onSuccess: () => {
+          toast.success("Service updated successfully!");
+          onClose();
+        },
+        onError: (error) => {
+          let errorMessage = "Failed to update service. Please try again.";
+          if (error instanceof Error) {
+            errorMessage = error.message;
+          }
+          toast.error(errorMessage);
+        },
       },
-      onError: (error) => {
-        let errorMessage = "Failed to create project. Please try again.";
-        if (error instanceof Error) {
-          errorMessage = error.message;
-        }
-        toast.error(errorMessage);
-      },
-    });
+    );
   };
+
+  if (!service) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden flex flex-col p-0 bg-white">
-        <DialogHeader className="p-6 border-b">
+        <DialogHeader className="px-8 py-6 border-b bg-gray-50/50">
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            <ImageIcon className="text-primary" />
-            Add New Past Project
+            <Pencil className="text-primary" size={20} />
+            Edit Service
           </DialogTitle>
         </DialogHeader>
 
@@ -183,18 +172,18 @@ export default function AddProjectModal({
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-bold text-primary uppercase tracking-widest">
               <span className="w-8 h-[2px] bg-primary/20"></span>
-              Project Identity
+              Service Identity
             </div>
             <div className="space-y-2">
               <Label
-                htmlFor="title"
+                htmlFor="edit-title"
                 className="text-sm font-semibold text-gray-700"
               >
-                Project Title <span className="text-red-500">*</span>
+                Service Title <span className="text-red-500">*</span>
               </Label>
               <Input
-                id="title"
-                placeholder="Enter a descriptive project title"
+                id="edit-title"
+                placeholder="Enter service title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200"
@@ -206,11 +195,11 @@ export default function AddProjectModal({
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-bold text-primary uppercase tracking-widest">
               <span className="w-8 h-[2px] bg-primary/20"></span>
-              Project Story
+              Service Description
             </div>
             <div className="space-y-2">
               <Label
-                htmlFor="description"
+                htmlFor="edit-description"
                 className="text-sm font-semibold text-gray-700"
               >
                 Detailed Description <span className="text-red-500">*</span>
@@ -218,35 +207,23 @@ export default function AddProjectModal({
               <TiptapEditor
                 value={description}
                 onChange={(val) => setDescription(val)}
-                placeholder="Share the story of this project..."
+                placeholder="Update the details of this service..."
               />
             </div>
           </div>
 
-          {/* Images Section */}
+          {/* Image Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-bold text-primary uppercase tracking-widest">
               <span className="w-8 h-[2px] bg-primary/20"></span>
               Visual Showcase
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="max-w-md">
               <ImageUploadField
-                label="Past State"
-                state={pastImage}
-                setter={setPastImage}
-                id="past-upload"
-              />
-              <ImageUploadField
-                label="Remodeled View"
-                state={remodelImage}
-                setter={setRemodelImage}
-                id="remodel-upload"
-              />
-              <ImageUploadField
-                label="Thumbnail"
-                state={thumbnailImage}
-                setter={setThumbnailImage}
-                id="thumbnail-upload"
+                label="Service Image"
+                state={imageState}
+                setter={setImageState}
+                id="edit-service-image-upload"
               />
             </div>
           </div>
@@ -270,10 +247,10 @@ export default function AddProjectModal({
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Publishing...
+                Updating...
               </>
             ) : (
-              "Publish Project"
+              "Save Changes"
             )}
           </Button>
         </DialogFooter>

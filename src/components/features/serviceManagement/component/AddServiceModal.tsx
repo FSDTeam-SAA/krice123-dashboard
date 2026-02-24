@@ -13,12 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import TiptapEditor from "@/components/shared/TiptapEditor";
 
-import { useCreatePastProject } from "../hooks/usePastProjects";
+import { useCreateService } from "../hooks/useServiceManagement";
 import { toast } from "sonner";
 import { Loader2, Upload, X, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 
-interface AddProjectModalProps {
+interface AddServiceModalProps {
   readonly isOpen: boolean;
   readonly onClose: () => void;
 }
@@ -98,65 +98,46 @@ const ImageUploadField = ({
   );
 };
 
-export default function AddProjectModal({
+export default function AddServiceModal({
   isOpen,
   onClose,
-}: AddProjectModalProps) {
+}: AddServiceModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-
-  const [thumbnailImage, setThumbnailImage] = useState<ImageState>({
-    file: null,
-    preview: "",
-  });
-  const [remodelImage, setRemodelImage] = useState<ImageState>({
-    file: null,
-    preview: "",
-  });
-  const [pastImage, setPastImage] = useState<ImageState>({
+  const [imageState, setImageState] = useState<ImageState>({
     file: null,
     preview: "",
   });
 
-  const { mutate: createProject, isPending } = useCreatePastProject();
+  const { mutate: createServiceMutation, isPending } = useCreateService();
 
   const resetForm = () => {
     setTitle("");
     setDescription("");
-    setThumbnailImage({ file: null, preview: "" });
-    setRemodelImage({ file: null, preview: "" });
-    setPastImage({ file: null, preview: "" });
+    setImageState({ file: null, preview: "" });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !title ||
-      !description ||
-      !thumbnailImage.file ||
-      !remodelImage.file ||
-      !pastImage.file
-    ) {
-      toast.error("Please fill in all fields and upload all images.");
+    if (!title || !description || !imageState.file) {
+      toast.error("Please fill in all fields and upload an image.");
       return;
     }
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("thumbnailImage", thumbnailImage.file);
-    formData.append("remodelImage", remodelImage.file);
-    formData.append("pastImage", pastImage.file);
+    formData.append("image", imageState.file);
 
-    createProject(formData, {
+    createServiceMutation(formData, {
       onSuccess: () => {
-        toast.success("Project created successfully!");
+        toast.success("Service created successfully!");
         onClose();
         resetForm();
       },
       onError: (error) => {
-        let errorMessage = "Failed to create project. Please try again.";
+        let errorMessage = "Failed to create service. Please try again.";
         if (error instanceof Error) {
           errorMessage = error.message;
         }
@@ -171,7 +152,7 @@ export default function AddProjectModal({
         <DialogHeader className="p-6 border-b">
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             <ImageIcon className="text-primary" />
-            Add New Past Project
+            Add New Service
           </DialogTitle>
         </DialogHeader>
 
@@ -183,18 +164,18 @@ export default function AddProjectModal({
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-bold text-primary uppercase tracking-widest">
               <span className="w-8 h-[2px] bg-primary/20"></span>
-              Project Identity
+              Service Identity
             </div>
             <div className="space-y-2">
               <Label
                 htmlFor="title"
                 className="text-sm font-semibold text-gray-700"
               >
-                Project Title <span className="text-red-500">*</span>
+                Service Title <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="title"
-                placeholder="Enter a descriptive project title"
+                placeholder="Enter a descriptive service title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200"
@@ -206,7 +187,7 @@ export default function AddProjectModal({
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-bold text-primary uppercase tracking-widest">
               <span className="w-8 h-[2px] bg-primary/20"></span>
-              Project Story
+              Service Description
             </div>
             <div className="space-y-2">
               <Label
@@ -218,35 +199,23 @@ export default function AddProjectModal({
               <TiptapEditor
                 value={description}
                 onChange={(val) => setDescription(val)}
-                placeholder="Share the story of this project..."
+                placeholder="Share more about this service..."
               />
             </div>
           </div>
 
-          {/* Images Section */}
+          {/* Image Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-bold text-primary uppercase tracking-widest">
               <span className="w-8 h-[2px] bg-primary/20"></span>
               Visual Showcase
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="max-w-md">
               <ImageUploadField
-                label="Past State"
-                state={pastImage}
-                setter={setPastImage}
-                id="past-upload"
-              />
-              <ImageUploadField
-                label="Remodeled View"
-                state={remodelImage}
-                setter={setRemodelImage}
-                id="remodel-upload"
-              />
-              <ImageUploadField
-                label="Thumbnail"
-                state={thumbnailImage}
-                setter={setThumbnailImage}
-                id="thumbnail-upload"
+                label="Service Image"
+                state={imageState}
+                setter={setImageState}
+                id="service-image-upload"
               />
             </div>
           </div>
@@ -273,7 +242,7 @@ export default function AddProjectModal({
                 Publishing...
               </>
             ) : (
-              "Publish Project"
+              "Publish Service"
             )}
           </Button>
         </DialogFooter>

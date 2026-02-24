@@ -11,9 +11,9 @@ import { Quotation } from "../types/quotation.types";
 import Image from "next/image";
 
 interface QuotationViewModalProps {
-  quotation: Quotation | null;
-  isOpen: boolean;
-  onClose: () => void;
+  readonly quotation: Quotation | null;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
 }
 
 const InfoSection = ({
@@ -109,6 +109,29 @@ export default function QuotationViewModal({
             />
           </InfoSection>
 
+          {/* Project Context */}
+          <InfoSection title="Project Context">
+            <InfoField
+              label="Has Built or Renovated Before?"
+              value={quotation.hasBuiltOrRenovatedBefore}
+            />
+            <InfoField
+              label="Has Selected Architect?"
+              value={
+                quotation.haveSelected ||
+                (quotation.hasSelectedArchitectOrDesigner ? "Yes" : "No")
+              }
+            />
+            <InfoField
+              label="Has All Property Info?"
+              value={quotation.hasAllPropertyInfo}
+            />
+            <InfoField
+              label="Has Permits Approved?"
+              value={quotation.hasPermitsApproved}
+            />
+          </InfoSection>
+
           {/* Project Details */}
           <InfoSection title="Project Details">
             <InfoField label="Work Type" value={quotation.workType} />
@@ -117,14 +140,14 @@ export default function QuotationViewModal({
               label="Desired Start Time"
               value={quotation.desiredStartTime}
             />
-            <InfoField
-              label="Has Selected Architect?"
-              value={quotation.haveSelected}
-            />
             <InfoField label="Has Financing?" value={quotation.hasFinancing} />
             <InfoField
               label="Site Ready?"
               value={quotation.isSiteReadyToWorkOn}
+            />
+            <InfoField
+              label="Wants Free Maintenance?"
+              value={quotation.wantsFreeMaintenance}
             />
           </InfoSection>
 
