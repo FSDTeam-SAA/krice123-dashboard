@@ -70,9 +70,9 @@ const ImageUploadField = ({
       <div className="flex items-center justify-between">
         <Label
           htmlFor={id}
-          className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2"
+          className="text-sm font-bold text-gray-700 flex items-center gap-2"
         >
-          <ImageIcon size={14} className="text-primary/60" />
+          <ImageIcon size={16} className="text-primary/60" />
           {label}
         </Label>
         {state.preview && (
@@ -96,54 +96,57 @@ const ImageUploadField = ({
         )}
       </div>
 
-      <div className="relative group/upload">
-        {state.preview ? (
-          <div className="relative aspect-square max-w-[180px] rounded-2xl overflow-hidden border-4 border-white shadow-xl ring-1 ring-gray-100 group mx-auto transition-transform duration-300 hover:scale-105">
-            <Image
-              src={state.preview}
-              alt={label}
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-2">
-              <button
-                type="button"
-                onClick={removeImage}
-                className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
-                title="Remove photo"
-              >
-                <X size={20} />
-              </button>
-              <p className="text-[10px] text-white font-bold uppercase tracking-tight">
-                Remove Photo
-              </p>
-            </div>
-          </div>
-        ) : (
-          <label
-            htmlFor={id}
-            className="flex flex-col items-center justify-center aspect-square max-w-[180px] rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all duration-300 mx-auto group/label"
-          >
-            <div className="flex flex-col items-center justify-center p-6 text-center">
-              <div className="w-12 h-12 rounded-xl bg-white shadow-sm border border-gray-100 flex items-center justify-center mb-3 group-hover/label:scale-110 transition-transform duration-300">
-                <Upload className="h-6 w-6 text-primary/60" />
+      <div className="flex justify-center">
+        <div className="relative group/upload w-full max-w-sm">
+          {state.preview ? (
+            <div className="relative aspect-4/3 w-full rounded-2xl overflow-hidden border-4 border-white shadow-xl ring-1 ring-gray-100 group transition-transform duration-300 hover:scale-[1.02]">
+              <Image
+                src={state.preview}
+                alt={label}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  className="p-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                  title="Remove photo"
+                >
+                  <X size={24} />
+                </button>
+                <p className="text-xs text-white font-bold uppercase tracking-wider">
+                  Replace Photo
+                </p>
               </div>
-              <p className="text-sm font-semibold text-gray-700 mb-1">
-                Change Photo
-              </p>
-              <p className="text-[10px] text-gray-400 font-medium">
-                Click to browse files
-              </p>
             </div>
-            <input
-              id={id}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageChange}
-            />
-          </label>
-        )}
+          ) : (
+            <label
+              htmlFor={id}
+              className="flex flex-col items-center justify-center aspect-4/3 w-full rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all duration-300 group/label"
+            >
+              <span className="sr-only">Upload profile photo</span>
+              <div className="flex flex-col items-center justify-center p-8 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center mb-4 group-hover/label:scale-110 transition-transform duration-300">
+                  <Upload className="h-8 w-8 text-primary/60" />
+                </div>
+                <p className="text-base font-semibold text-gray-700 mb-2">
+                  Change Photo
+                </p>
+                <p className="text-xs text-gray-400 font-medium">
+                  Click to browse files
+                </p>
+              </div>
+              <input
+                id={id}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+            </label>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -215,126 +218,117 @@ export default function EditMemberModal({
               </div>
               Edit Profile
             </DialogTitle>
-            <p className="text-sm text-gray-500 ml-13">
+            <p className="text-sm text-gray-500 ml-[52px]">
               Update member details and professional information.
             </p>
           </div>
         </DialogHeader>
-
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-1 md:grid-cols-12 h-full">
-            {/* Sidebar Column */}
-            <div className="md:col-span-4 bg-gray-50/50 p-8 border-r border-gray-100">
-              <div className="sticky top-0">
-                <ImageUploadField
-                  label="Profile Photo"
-                  state={imageState}
-                  setter={setImageState}
-                  id="edit-team-member-photo-upload"
-                />
+          <div className="max-w-3xl mx-auto p-8 space-y-10">
+            {/* Image Section */}
+            <ImageUploadField
+              label="Profile Photo"
+              state={imageState}
+              setter={setImageState}
+              id="edit-team-member-photo-upload"
+            />
 
-                <div className="mt-10 p-4 rounded-xl bg-blue-50 border border-blue-100">
-                  <h4 className="text-xs font-bold text-blue-700 uppercase tracking-widest mb-2 flex items-center gap-2">
-                    <History size={12} /> Last Activity
-                  </h4>
-                  <p className="text-[10px] text-gray-600 font-medium">
-                    Account created on{" "}
-                    {new Date(member.createdAt).toLocaleDateString()}
-                  </p>
-                  <p className="text-[10px] text-gray-600 font-medium mt-1">
-                    Last update:{" "}
-                    {new Date(member.updatedAt).toLocaleDateString()}
-                  </p>
+            {/* Form Fields */}
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="edit-name"
+                    className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                  >
+                    <User size={16} className="text-gray-400" />
+                    Full Name
+                  </Label>
+                  <Input
+                    id="edit-name"
+                    placeholder="e.g. Alexander Pierce"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200 rounded-xl bg-white shadow-sm transition-all text-base"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="edit-role"
+                    className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                  >
+                    <Briefcase size={16} className="text-gray-400" />
+                    Professional Role
+                  </Label>
+                  <Input
+                    id="edit-role"
+                    placeholder="e.g. Senior Backend Architect"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200 rounded-xl bg-white shadow-sm transition-all text-base"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label
+                  htmlFor="edit-description"
+                  className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                >
+                  <Type size={16} className="text-gray-400" />
+                  Short Bio
+                </Label>
+                <div className="rounded-xl overflow-hidden border border-gray-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5 transition-all bg-white shadow-sm">
+                  <TiptapEditor
+                    value={description}
+                    onChange={(val) => setDescription(val)}
+                    placeholder="Update the member biography details..."
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Main Form Column */}
-            <div className="md:col-span-8 p-8 space-y-10">
-              {/* Identity Section */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="h-px flex-1 bg-gray-100"></div>
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                    Identity & Expertise
-                  </span>
-                  <div className="h-px flex-1 bg-gray-100"></div>
+            {/* Last Activity Section at the bottom */}
+            <div className="p-5 rounded-2xl bg-blue-50/50 border border-blue-100/50">
+              <h4 className="text-xs font-bold text-blue-700 uppercase tracking-widest mb-3 flex items-center gap-2">
+                <History size={14} /> Last Activity
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tight">
+                    Created On
+                  </p>
+                  <p className="text-sm text-gray-700 font-semibold">
+                    {new Date(member.createdAt).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="edit-name"
-                      className="text-sm font-semibold text-gray-700 flex items-center gap-2"
-                    >
-                      <User size={16} className="text-gray-400" />
-                      Full Name
-                    </Label>
-                    <Input
-                      id="edit-name"
-                      placeholder="e.g. Alexander Pierce"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200 rounded-xl bg-white shadow-sm transition-all"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="edit-role"
-                      className="text-sm font-semibold text-gray-700 flex items-center gap-2"
-                    >
-                      <Briefcase size={16} className="text-gray-400" />
-                      Professional Role
-                    </Label>
-                    <Input
-                      id="edit-role"
-                      placeholder="e.g. Senior Backend Architect"
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200 rounded-xl bg-white shadow-sm transition-all"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Biography Section */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="h-px flex-1 bg-gray-100"></div>
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                    Professional Biography
-                  </span>
-                  <div className="h-px flex-1 bg-gray-100"></div>
-                </div>
-
-                <div className="space-y-2 group/biography">
-                  <Label
-                    htmlFor="edit-description"
-                    className="text-sm font-semibold text-gray-700 flex items-center gap-2"
-                  >
-                    <Type size={16} className="text-gray-400" />
-                    Short Bio
-                  </Label>
-                  <div className="rounded-xl overflow-hidden border border-gray-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5 transition-all bg-white shadow-sm">
-                    <TiptapEditor
-                      value={description}
-                      onChange={(val) => setDescription(val)}
-                      placeholder="Update the member biography details..."
-                    />
-                  </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tight">
+                    Last Updated
+                  </p>
+                  <p className="text-sm text-gray-700 font-semibold">
+                    {new Date(member.updatedAt).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </form>
-
         <DialogFooter className="px-8 py-6 border-t bg-gray-50/80 backdrop-blur-sm flex items-center justify-end gap-3 sticky bottom-0 z-10 w-full">
           <Button
             variant="ghost"
             onClick={onClose}
             disabled={isPending}
-            className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 h-11 px-6 font-medium rounded-xl transition-all"
+            className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 h-11 px-6 font-medium rounded-xl transition-all border cursor-pointer"
           >
             Discard Changes
           </Button>
@@ -342,7 +336,7 @@ export default function EditMemberModal({
             type="submit"
             disabled={isPending}
             onClick={handleSubmit}
-            className="bg-primary hover:bg-primary/90 text-white min-w-[160px] h-11 font-bold rounded-xl shadow-lg hover:shadow-primary/20 transition-all active:scale-95 flex items-center gap-2"
+            className="bg-primary hover:bg-primary/90 text-white min-w-[160px] h-11 font-bold rounded-xl shadow-lg hover:shadow-primary/20 transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
           >
             {isPending ? (
               <>
@@ -351,7 +345,7 @@ export default function EditMemberModal({
               </>
             ) : (
               <>
-                <Sparkles size={18} />
+             
                 Save Changes
               </>
             )}
