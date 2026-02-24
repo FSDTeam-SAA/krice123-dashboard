@@ -80,8 +80,8 @@ export default function QuotationManagement() {
   return (
     <div className="p-6 space-y-6">
       <HeaderTitle
-        title="Quotation Managements"
-        subtitle="Dashboard > Quotation Managements"
+        title="Quotation Management"
+        subtitle="Dashboard > Quotation Management"
       />
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">

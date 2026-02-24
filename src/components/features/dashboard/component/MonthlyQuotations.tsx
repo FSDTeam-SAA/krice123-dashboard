@@ -75,21 +75,6 @@ export default function MonthlyQuotations() {
           </p>
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 px-5 py-2.5 text-[14px] font-semibold text-gray-600 bg-white border border-gray-200 rounded-[10px] hover:bg-gray-50/50 transition-all shadow-sm">
-            Monthly
-            <ChevronDown className="w-4 h-4 text-gray-400" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="rounded-xl border-gray-100"
-          >
-            <DropdownMenuItem>Daily</DropdownMenuItem>
-            <DropdownMenuItem>Weekly</DropdownMenuItem>
-            <DropdownMenuItem>Monthly</DropdownMenuItem>
-            <DropdownMenuItem>Yearly</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
 
       <div className="h-[450px] w-full mt-2">

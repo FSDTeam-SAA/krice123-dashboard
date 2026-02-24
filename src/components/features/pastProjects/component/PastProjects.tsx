@@ -173,21 +173,19 @@ export default function PastProjects() {
                         <td className="px-6 py-4 text-sm text-gray-600 text-center">
                           {formatDate(item.createdAt)}
                         </td>
-                        <td className="px-6 py-4 text-center">
-                          <div className="flex items-center justify-center gap-2">
-                            <button
-                              onClick={() => handleViewDetails(item)}
-                              className="p-2 bg-primary text-white rounded-md hover:bg-opacity-90 transition-all inline-flex items-center justify-center cursor-pointer"
-                            >
-                              <Eye size={18} />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteClick(item._id)}
-                              className="p-2 bg-red-500 text-white rounded-md hover:bg-opacity-90 transition-all inline-flex items-center justify-center cursor-pointer"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          </div>
+                        <td className="px-6 py-4 text-center flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => handleViewDetails(item)}
+                            className="p-2 bg-primary text-white rounded-md hover:bg-opacity-90 transition-all inline-flex items-center justify-center cursor-pointer"
+                          >
+                            <Eye size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(item._id)}
+                            className="p-2 bg-red-500 text-white rounded-md hover:bg-opacity-90 transition-all inline-flex items-center justify-center cursor-pointer"
+                          >
+                            <Trash2 size={18} />
+                          </button>
                         </td>
                       </tr>
                     ))

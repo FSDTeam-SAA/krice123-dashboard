@@ -121,6 +121,18 @@ export default function ViewProjectModal({
               />
             </div>
           </div>
+
+          {/* Metadata */}
+          <InfoSection title="Submission Details">
+            <InfoField
+              label="Created At"
+              value={new Date(project.createdAt).toLocaleString()}
+            />
+            <InfoField
+              label="Last Updated"
+              value={new Date(project.updatedAt).toLocaleString()}
+            />
+          </InfoSection>
         </div>
 
         <div className="p-6 border-t bg-gray-50 flex justify-end">
