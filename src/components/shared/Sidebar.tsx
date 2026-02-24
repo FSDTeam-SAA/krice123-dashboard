@@ -37,7 +37,7 @@ const navigation = [
   },
   {
     name: "Our Team Management",
-    href: "/our-team",
+    href: "/our-team-management",
     icon: UsersRound,
   },
   { name: "Settings", href: "/settings", icon: Settings },
