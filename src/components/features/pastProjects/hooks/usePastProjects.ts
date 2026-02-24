@@ -5,6 +5,7 @@ import {
   createPastProject,
   deletePastProject,
   getPastProjects,
+  updatePastProject,
 } from "../api/pastProjects.api";
 
 export const usePastProjects = (page: number = 1, limit: number = 10) => {
@@ -32,6 +33,18 @@ export const useCreatePastProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: FormData) => createPastProject(formData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["past-projects"] });
+    },
+  });
+};
+
+// update hook
+export const useUpdatePastProject = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, formData }: { id: string; formData: FormData }) =>
+      updatePastProject(id, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["past-projects"] });
     },

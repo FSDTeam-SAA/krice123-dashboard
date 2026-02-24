@@ -6,11 +6,19 @@ import {
   useDeletePastProjects,
 } from "../hooks/usePastProjects";
 import HeaderTitle from "@/components/shared/HeaderTitle";
-import { Eye, ChevronLeft, ChevronRight, Trash2, Plus } from "lucide-react";
+import {
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+  Trash2,
+  Plus,
+  Pencil,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import ViewProjectModal from "./ViewProjectModal";
 import AddProjectModal from "./AddProjectModal";
+import EditProjectModal from "./EditProjectModal";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { PastProject } from "../types/pastProjects.types";
 import { toast } from "sonner";
@@ -26,6 +34,7 @@ export default function PastProjects() {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Delete state
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
@@ -37,6 +46,11 @@ export default function PastProjects() {
   const handleViewDetails = (project: PastProject) => {
     setSelectedProject(project);
     setIsModalOpen(true);
+  };
+
+  const handleEditClick = (project: PastProject) => {
+    setSelectedProject(project);
+    setIsEditModalOpen(true);
   };
 
   const formatDate = (dateString: string) => {
@@ -87,7 +101,7 @@ export default function PastProjects() {
         />
         <Button
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2"
+          className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2 cursor-pointer"
         >
           <Plus size={18} />
           Add New Project
@@ -167,8 +181,17 @@ export default function PastProjects() {
                         <td className="px-6 py-4 text-sm font-medium text-gray-900 capitalize">
                           {item.title}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600 truncate max-w-[300px]">
-                          {item.description}
+                        <td className="px-6 py-4 text-sm text-gray-600 max-w-[300px]">
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html:
+                                item.description
+                                  ?.replace(/<[^>]+>/g, "")
+                                  .split(" ")
+                                  .slice(0, 10)
+                                  .join(" ") + "...",
+                            }}
+                          />
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-600 text-center">
                           {formatDate(item.createdAt)}
@@ -176,13 +199,22 @@ export default function PastProjects() {
                         <td className="px-6 py-4 text-center flex items-center justify-center gap-2">
                           <button
                             onClick={() => handleViewDetails(item)}
-                            className="p-2 bg-primary text-white rounded-md hover:bg-opacity-90 transition-all inline-flex items-center justify-center cursor-pointer"
+                            className="p-2 bg-primary/10 text-primary rounded-md hover:bg-primary hover:text-white transition-all inline-flex items-center justify-center cursor-pointer"
+                            title="View Details"
                           >
                             <Eye size={18} />
                           </button>
                           <button
+                            onClick={() => handleEditClick(item)}
+                            className="p-2 bg-blue-500/10 text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition-all inline-flex items-center justify-center cursor-pointer"
+                            title="Edit Project"
+                          >
+                            <Pencil size={18} />
+                          </button>
+                          <button
                             onClick={() => handleDeleteClick(item._id)}
-                            className="p-2 bg-red-500 text-white rounded-md hover:bg-opacity-90 transition-all inline-flex items-center justify-center cursor-pointer"
+                            className="p-2 bg-red-500/10 text-red-600 rounded-md hover:bg-red-600 hover:text-white transition-all inline-flex items-center justify-center cursor-pointer"
+                            title="Delete Project"
                           >
                             <Trash2 size={18} />
                           </button>
@@ -283,6 +315,15 @@ export default function PastProjects() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
       />
+
+      {isEditModalOpen && selectedProject && (
+        <EditProjectModal
+          key={selectedProject._id}
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          project={selectedProject}
+        />
+      )}
 
       <ViewProjectModal
         isOpen={isModalOpen}

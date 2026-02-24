@@ -16,38 +16,6 @@ interface ViewProjectModalProps {
   readonly onClose: () => void;
 }
 
-const InfoSection = ({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) => (
-  <div className="space-y-3">
-    <h3 className="text-sm font-semibold text-[#217337] uppercase tracking-wider border-b pb-1">
-      {title}
-    </h3>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>
-  </div>
-);
-
-const InfoField = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number | undefined;
-}) => {
-  const displayValue = value || "N/A";
-
-  return (
-    <div className="space-y-1">
-      <p className="text-xs text-gray-500 font-medium">{label}</p>
-      <div className="text-sm text-gray-900">{displayValue}</div>
-    </div>
-  );
-};
-
 const ImageDisplay = ({ label, src }: { label: string; src: string }) => (
   <div className="space-y-2">
     <p className="text-xs text-gray-500 font-medium">{label}</p>
@@ -81,66 +49,88 @@ export default function ViewProjectModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 bg-white">
-        <DialogHeader className="p-6 border-b bg-gray-50">
-          <DialogTitle className="text-xl font-bold text-gray-900">
-            Project Details: {project.title}
+        <DialogHeader className="px-8 py-6 border-b bg-gray-50/50">
+          <DialogTitle className="text-lg font-semibold text-gray-900">
+            Project Details
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-8">
-          {/* Project Information */}
-          <InfoSection title="Project Overview">
-            <InfoField label="Title" value={project.title} />
-            <InfoField
-              label="Created At"
-              value={new Date(project.createdAt).toLocaleDateString()}
-            />
-          </InfoSection>
-
-          {/* Description */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-[#217337] uppercase tracking-wider border-b pb-1">
-              Description
-            </h3>
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 text-sm text-gray-700 whitespace-pre-wrap">
-              {project.description}
+        <div className="flex-1 overflow-y-auto px-8 py-8 space-y-10">
+          {/* Header Section: Title & Date */}
+          <div className="space-y-2 border-b pb-6">
+            <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight capitalize">
+              {project.title}
+            </h2>
+            <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
+              <span>Created on</span>
+              <time className="text-gray-700">
+                {new Date(project.createdAt).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </time>
             </div>
           </div>
 
-          {/* Project Images */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-[#217337] uppercase tracking-wider border-b pb-1">
-              Project Images
+          {/* Description Section */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-primary uppercase tracking-widest flex items-center gap-2">
+              <span className="w-8 h-[2px] bg-primary/20"></span>
+              Project Description
+            </h3>
+            <div
+              className="prose prose-sm sm:prose-base prose-primary max-w-none text-gray-700 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: project.description }}
+            />
+          </div>
+
+          {/* Project Images Section */}
+          <div className="space-y-6 pt-2">
+            <h3 className="text-sm font-bold text-primary uppercase tracking-widest flex items-center gap-2">
+              <span className="w-8 h-[2px] bg-primary/20"></span>
+              Project Showcase
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <ImageDisplay label="Past Image" src={project.pastImage} />
-              <ImageDisplay label="Remodel Image" src={project.remodelImage} />
+              <ImageDisplay label="Past State" src={project.pastImage} />
               <ImageDisplay
-                label="Thumbnail Image"
+                label="Remodeled Result"
+                src={project.remodelImage}
+              />
+              <ImageDisplay
+                label="Thumbnail View"
                 src={project.thumbnailImage}
               />
             </div>
           </div>
 
-          {/* Metadata */}
-          <InfoSection title="Submission Details">
-            <InfoField
-              label="Created At"
-              value={new Date(project.createdAt).toLocaleString()}
-            />
-            <InfoField
-              label="Last Updated"
-              value={new Date(project.updatedAt).toLocaleString()}
-            />
-          </InfoSection>
+          {/* Metadata Footer */}
+          <div className="pt-10 border-t flex flex-wrap gap-x-10 gap-y-4">
+            <div className="space-y-1">
+              <p className="text-[10px] uppercase tracking-tighter text-gray-400 font-bold">
+                Reference ID
+              </p>
+              <code className="text-xs text-gray-500 font-mono">
+                {project._id}
+              </code>
+            </div>
+            <div className="space-y-1">
+              <p className="text-[10px] uppercase tracking-tighter text-gray-400 font-bold">
+                Last Synchronized
+              </p>
+              <p className="text-xs text-gray-500">
+                {new Date(project.updatedAt).toLocaleString()}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="p-6 border-t bg-gray-50 flex justify-end">
+        <div className="px-8 py-6 border-t bg-gray-50/50 flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-primary text-white rounded-md hover:bg-opacity-90 transition-all font-medium text-sm cursor-pointer"
+            className="px-8 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all font-semibold text-sm shadow-sm hover:shadow-md cursor-pointer active:scale-95"
           >
-            Dismiss
+            Close Details
           </button>
         </div>
       </DialogContent>

@@ -60,7 +60,7 @@ export default function NewContactMessage() {
           </p>
         </div>
         <Link
-          href="/dashboard/contact-messages"
+          href="/contact-management"
           className="group flex items-center gap-1.5 text-[13px] font-semibold text-[#1E3A5F] hover:text-blue-700 transition-colors"
         >
           View All

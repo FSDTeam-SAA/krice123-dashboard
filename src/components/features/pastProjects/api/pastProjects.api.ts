@@ -33,3 +33,16 @@ export const createPastProject = async (
   });
   return response.data;
 };
+
+// update past project
+export const updatePastProject = async (
+  id: string,
+  formData: FormData,
+): Promise<PastProjectResponse> => {
+  const response = await axiosInstance.patch(`/past-projects/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
