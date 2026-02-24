@@ -13,19 +13,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import TiptapEditor from "@/components/shared/TiptapEditor";
 
-import { useCreatePastProject } from "../hooks/usePastProjects";
+import { useUpdatePastProject } from "../hooks/usePastProjects";
 import { toast } from "sonner";
-import { Loader2, Upload, X, Image as ImageIcon } from "lucide-react";
+import { Loader2, Upload, X, Pencil } from "lucide-react";
 import Image from "next/image";
+import { PastProject } from "../types/pastProjects.types";
 
-interface AddProjectModalProps {
+interface EditProjectModalProps {
   readonly isOpen: boolean;
   readonly onClose: () => void;
+  readonly project: PastProject | null;
 }
 
 interface ImageState {
   file: File | null;
   preview: string;
+  isExisting?: boolean;
 }
 
 const ImageUploadField = ({
@@ -43,18 +46,18 @@ const ImageUploadField = ({
     const file = e.target.files?.[0];
     if (file) {
       const preview = URL.createObjectURL(file);
-      setter({ file, preview });
+      setter({ file, preview, isExisting: false });
     }
   };
 
   const removeImage = () => {
-    setter({ file: null, preview: "" });
+    setter({ file: null, preview: "", isExisting: false });
   };
 
   return (
     <div className="space-y-2">
       <Label htmlFor={id} className="text-sm font-medium text-gray-700">
-        {label} <span className="text-red-500">*</span>
+        {label}
       </Label>
       <div className="relative">
         {state.preview ? (
@@ -68,9 +71,9 @@ const ImageUploadField = ({
             <button
               type="button"
               onClick={removeImage}
-              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
             >
-              <X size={16} />
+              <X size={14} />
             </button>
           </div>
         ) : (
@@ -78,10 +81,10 @@ const ImageUploadField = ({
             htmlFor={id}
             className="flex flex-col items-center justify-center aspect-video rounded-lg border-2 border-dashed border-gray-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all"
           >
-            <div className="flex flex-col items-center justify-center py-4">
-              <Upload className="h-8 w-8 text-gray-400 mb-2" />
-              <p className="text-xs text-gray-500">
-                Click to upload {label.toLowerCase()}
+            <div className="flex flex-col items-center justify-center py-4 text-center px-4">
+              <Upload className="h-6 w-6 text-gray-400 mb-2" />
+              <p className="text-[10px] text-gray-500 font-medium">
+                Click to update {label.toLowerCase()}
               </p>
             </div>
             <input
@@ -98,80 +101,83 @@ const ImageUploadField = ({
   );
 };
 
-export default function AddProjectModal({
+export default function EditProjectModal({
   isOpen,
   onClose,
-}: AddProjectModalProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  project,
+}: EditProjectModalProps) {
+  const [title, setTitle] = useState(project?.title ?? "");
+  const [description, setDescription] = useState(project?.description ?? "");
 
   const [thumbnailImage, setThumbnailImage] = useState<ImageState>({
     file: null,
-    preview: "",
+    preview: project?.thumbnailImage ?? "",
+    isExisting: !!project,
   });
   const [remodelImage, setRemodelImage] = useState<ImageState>({
     file: null,
-    preview: "",
+    preview: project?.remodelImage ?? "",
+    isExisting: !!project,
   });
   const [pastImage, setPastImage] = useState<ImageState>({
     file: null,
-    preview: "",
+    preview: project?.pastImage ?? "",
+    isExisting: !!project,
   });
 
-  const { mutate: createProject, isPending } = useCreatePastProject();
-
-  const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setThumbnailImage({ file: null, preview: "" });
-    setRemodelImage({ file: null, preview: "" });
-    setPastImage({ file: null, preview: "" });
-  };
+  const { mutate: updateProject, isPending } = useUpdatePastProject();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !title ||
-      !description ||
-      !thumbnailImage.file ||
-      !remodelImage.file ||
-      !pastImage.file
-    ) {
-      toast.error("Please fill in all fields and upload all images.");
+    if (!project) return;
+
+    if (!title || !description) {
+      toast.error("Title and description are required.");
       return;
     }
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("thumbnailImage", thumbnailImage.file);
-    formData.append("remodelImage", remodelImage.file);
-    formData.append("pastImage", pastImage.file);
 
-    createProject(formData, {
-      onSuccess: () => {
-        toast.success("Project created successfully!");
-        onClose();
-        resetForm();
+    if (thumbnailImage.file) {
+      formData.append("thumbnailImage", thumbnailImage.file);
+    }
+    if (remodelImage.file) {
+      formData.append("remodelImage", remodelImage.file);
+    }
+    if (pastImage.file) {
+      formData.append("pastImage", pastImage.file);
+    }
+
+    updateProject(
+      { id: project._id, formData },
+      {
+        onSuccess: () => {
+          toast.success("Project updated successfully!");
+          onClose();
+        },
+        onError: (error) => {
+          let errorMessage = "Failed to update project. Please try again.";
+          if (error instanceof Error) {
+            errorMessage = error.message;
+          }
+          toast.error(errorMessage);
+        },
       },
-      onError: (error) => {
-        let errorMessage = "Failed to create project. Please try again.";
-        if (error instanceof Error) {
-          errorMessage = error.message;
-        }
-        toast.error(errorMessage);
-      },
-    });
+    );
   };
+
+  if (!project) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden flex flex-col p-0 bg-white">
-        <DialogHeader className="p-6 border-b">
+        <DialogHeader className="px-8 py-6 border-b bg-gray-50/50">
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            <ImageIcon className="text-primary" />
-            Add New Past Project
+            <Pencil className="text-primary" size={20} />
+            Edit Past Project
           </DialogTitle>
         </DialogHeader>
 
@@ -187,14 +193,14 @@ export default function AddProjectModal({
             </div>
             <div className="space-y-2">
               <Label
-                htmlFor="title"
+                htmlFor="edit-title"
                 className="text-sm font-semibold text-gray-700"
               >
                 Project Title <span className="text-red-500">*</span>
               </Label>
               <Input
-                id="title"
-                placeholder="Enter a descriptive project title"
+                id="edit-title"
+                placeholder="Enter project title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200"
@@ -210,7 +216,7 @@ export default function AddProjectModal({
             </div>
             <div className="space-y-2">
               <Label
-                htmlFor="description"
+                htmlFor="edit-description"
                 className="text-sm font-semibold text-gray-700"
               >
                 Detailed Description <span className="text-red-500">*</span>
@@ -234,19 +240,19 @@ export default function AddProjectModal({
                 label="Past State"
                 state={pastImage}
                 setter={setPastImage}
-                id="past-upload"
+                id="edit-past-upload"
               />
               <ImageUploadField
                 label="Remodeled View"
                 state={remodelImage}
                 setter={setRemodelImage}
-                id="remodel-upload"
+                id="edit-remodel-upload"
               />
               <ImageUploadField
                 label="Thumbnail"
                 state={thumbnailImage}
                 setter={setThumbnailImage}
-                id="thumbnail-upload"
+                id="edit-thumbnail-upload"
               />
             </div>
           </div>
@@ -270,10 +276,10 @@ export default function AddProjectModal({
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Publishing...
+                Updating...
               </>
             ) : (
-              "Publish Project"
+              "Save Changes"
             )}
           </Button>
         </DialogFooter>
