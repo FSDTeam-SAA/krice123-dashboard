@@ -61,62 +61,66 @@ const ImageUploadField = ({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <Label
         htmlFor={id}
-        className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2"
+        className="text-sm font-bold text-gray-700 flex items-center gap-2 mb-2"
       >
-        <ImageIcon size={14} className="text-primary/60" />
+        <ImageIcon size={16} className="text-primary/60" />
         {label} <span className="text-red-500">*</span>
       </Label>
-      <div className="relative group/upload">
-        {state.preview ? (
-          <div className="relative aspect-square max-w-[180px] rounded-2xl overflow-hidden border-4 border-white shadow-xl ring-1 ring-gray-100 group mx-auto transition-transform duration-300 hover:scale-105">
-            <Image
-              src={state.preview}
-              alt={label}
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-2">
-              <button
-                type="button"
-                onClick={removeImage}
-                className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
-                title="Remove photo"
-              >
-                <X size={20} />
-              </button>
-              <p className="text-[10px] text-white font-bold uppercase tracking-tight">
-                Remove Photo
-              </p>
-            </div>
-          </div>
-        ) : (
-          <label
-            htmlFor={id}
-            className="flex flex-col items-center justify-center aspect-square max-w-[180px] rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all duration-300 mx-auto group/label"
-          >
-            <div className="flex flex-col items-center justify-center p-6 text-center">
-              <div className="w-12 h-12 rounded-xl bg-white shadow-sm border border-gray-100 flex items-center justify-center mb-3 group-hover/label:scale-110 transition-transform duration-300">
-                <Upload className="h-6 w-6 text-primary/60" />
+
+      <div className="flex justify-center">
+        <div className="relative group/upload w-full max-w-sm">
+          {state.preview ? (
+            <div className="relative aspect-4/3 w-full rounded-2xl overflow-hidden border-4 border-white shadow-xl ring-1 ring-gray-100 group transition-transform duration-300 hover:scale-[1.02]">
+              <Image
+                src={state.preview}
+                alt={label}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  className="p-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                  title="Remove photo"
+                >
+                  <X size={24} />
+                </button>
+                <p className="text-xs text-white font-bold uppercase tracking-wider">
+                  Remove and Replace
+                </p>
               </div>
-              <p className="text-sm font-semibold text-gray-700 mb-1">
-                Upload Photo
-              </p>
-              <p className="text-[10px] text-gray-400 font-medium">
-                JPG, PNG or WebP
-              </p>
             </div>
-            <input
-              id={id}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageChange}
-            />
-          </label>
-        )}
+          ) : (
+            <label
+              htmlFor={id}
+              className="flex flex-col items-center justify-center aspect-4/3 w-full rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all duration-300 group/label"
+            >
+              <span className="sr-only">Upload profile photo</span>
+              <div className="flex flex-col items-center justify-center p-8 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center mb-4 group-hover/label:scale-110 transition-transform duration-300">
+                  <Upload className="h-8 w-8 text-primary/60" />
+                </div>
+                <p className="text-base font-semibold text-gray-700 mb-2">
+                  Upload Profile Photo
+                </p>
+                <p className="text-xs text-gray-400 font-medium">
+                  Professional headshot preferred (JPG, PNG or WebP)
+                </p>
+              </div>
+              <input
+                id={id}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+            </label>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -184,116 +188,80 @@ export default function AddMemberModal({
               </div>
               Add Team Member
             </DialogTitle>
-            <p className="text-sm text-gray-500 ml-13">
+            <p className="text-sm text-gray-500 ml-[52px]">
               Expand your team with a new professional profile.
             </p>
           </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-1 md:grid-cols-12 h-full">
-            {/* Sidebar Column */}
-            <div className="md:col-span-4 bg-gray-50/50 p-8 border-r border-gray-100">
-              <div className="sticky top-0">
-                <ImageUploadField
-                  label="Profile Photo"
-                  state={imageState}
-                  setter={setImageState}
-                  id="team-member-photo-upload"
-                />
+          <div className="max-w-3xl mx-auto p-8 space-y-10">
+            {/* Image Section */}
+            <ImageUploadField
+              label="Profile Photo"
+              state={imageState}
+              setter={setImageState}
+              id="team-member-photo-upload"
+            />
 
-                <div className="mt-10 p-4 rounded-xl bg-primary/5 border border-primary/10">
-                  <h4 className="text-xs font-bold text-primary uppercase tracking-widest mb-2">
-                    Display Tip
-                  </h4>
-                  <p className="text-xs text-gray-600 leading-relaxed italic">
-                    "A high-quality 1:1 ratio headshot works best for member
-                    profiles."
+            {/* Form Fields */}
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="name"
+                    className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                  >
+                    <User size={16} className="text-gray-400" />
+                    Full Name
+                  </Label>
+                  <Input
+                    id="name"
+                    placeholder="e.g. Alexander Pierce"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200 rounded-xl bg-white shadow-sm transition-all text-base"
+                  />
+                  <p className="text-[10px] text-gray-400">
+                    First and last name preferred.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="role"
+                    className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                  >
+                    <Briefcase size={16} className="text-gray-400" />
+                    Professional Role
+                  </Label>
+                  <Input
+                    id="role"
+                    placeholder="e.g. Senior Backend Architect"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200 rounded-xl bg-white shadow-sm transition-all text-base"
+                  />
+                  <p className="text-[10px] text-gray-400">
+                    Main designation within the company.
                   </p>
                 </div>
               </div>
-            </div>
 
-            {/* Main Form Column */}
-            <div className="md:col-span-8 p-8 space-y-10">
-              {/* Identity Section */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="h-px flex-1 bg-gray-100"></div>
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                    Identity & Expertise
-                  </span>
-                  <div className="h-px flex-1 bg-gray-100"></div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="name"
-                      className="text-sm font-semibold text-gray-700 flex items-center gap-2"
-                    >
-                      <User size={16} className="text-gray-400" />
-                      Full Name
-                    </Label>
-                    <Input
-                      id="name"
-                      placeholder="e.g. Alexander Pierce"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200 rounded-xl bg-white shadow-sm transition-all"
-                    />
-                    <p className="text-[10px] text-gray-400">
-                      First and last name preferred.
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="role"
-                      className="text-sm font-semibold text-gray-700 flex items-center gap-2"
-                    >
-                      <Briefcase size={16} className="text-gray-400" />
-                      Professional Role
-                    </Label>
-                    <Input
-                      id="role"
-                      placeholder="e.g. Senior Backend Architect"
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200 rounded-xl bg-white shadow-sm transition-all"
-                    />
-                    <p className="text-[10px] text-gray-400">
-                      Main designation within the company.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Biography Section */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="h-px flex-1 bg-gray-100"></div>
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                    Professional Biography
-                  </span>
-                  <div className="h-px flex-1 bg-gray-100"></div>
-                </div>
-
-                <div className="space-y-2 group/biography">
-                  <Label
-                    htmlFor="description"
-                    className="text-sm font-semibold text-gray-700 flex items-center gap-2"
-                  >
-                    <Type size={16} className="text-gray-400" />
-                    Short Bio
-                  </Label>
-                  <div className="rounded-xl overflow-hidden border border-gray-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5 transition-all bg-white shadow-sm">
-                    <TiptapEditor
-                      value={description}
-                      onChange={(val) => setDescription(val)}
-                      placeholder="Share a brief overview of professional experience and achievements..."
-                    />
-                  </div>
+              <div className="space-y-4">
+                <Label
+                  htmlFor="description"
+                  className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                >
+                  <Type size={16} className="text-gray-400" />
+                  Short Bio
+                </Label>
+                <div className="rounded-xl overflow-hidden border border-gray-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5 transition-all bg-white shadow-sm">
+                  <TiptapEditor
+                    value={description}
+                    onChange={(val) => setDescription(val)}
+                    placeholder="Share a brief overview of professional experience and achievements..."
+                  />
                 </div>
               </div>
             </div>

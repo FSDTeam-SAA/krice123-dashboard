@@ -37,7 +37,7 @@ export const updateTeamMember = async (
   id: string,
   formData: FormData,
 ): Promise<OurTeamResponse> => {
-  const response = await axiosInstance.patch(`/members/${id}`, formData, {
+  const response = await axiosInstance.put(`/members/${id}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
