@@ -1,37 +1,101 @@
 "use client";
-
 import React, { useState } from "react";
 import HeaderTitle from "@/components/shared/HeaderTitle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Save, X } from "lucide-react";
+import { Eye, EyeOff, Save, X, Loader2 } from "lucide-react";
+import { useChangePassword } from "../hook/useSetting";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
 
 export default function ChangePassword() {
+  const router = useRouter();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const { mutate: changePasswordMutation, isPending } = useChangePassword();
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("New password and confirm password do not match.");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters long.");
+      return;
+    }
+
+    const payload = {
+      currentPassword,
+      newPassword,
+    };
+
+    changePasswordMutation(payload, {
+      onSuccess: () => {
+        toast.success("Password changed successfully!");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      },
+      onError: (error: AxiosError<{ message?: string }>) => {
+        const errorMessage =
+          error?.response?.data?.message ||
+          "Failed to change password. Please try again.";
+        toast.error(errorMessage);
+      },
+    });
+  };
+
+  const handleCancel = () => {
+    router.back();
+  };
+
   return (
-    <div className="p-6 space-y-8 bg-white min-h-screen">
+    <div className="p-6 space-y-8 bg-white h-screen">
       {/* Header Section */}
       <HeaderTitle title="Setting" subtitle="Dashboard > Setting" />
 
       {/* Change Password Card */}
-      <div className="bg-[#f8faf7] border border-[#d8ead3] rounded-2xl p-8 space-y-8 shadow-sm">
-        <h3 className="text-lg font-bold text-gray-800">Change Password</h3>
+      <form
+        onSubmit={handleSave}
+        className="bg-[#f8faf7] border border-[#d8ead3] rounded-2xl p-8 space-y-8 shadow-sm mx-auto container"
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold text-gray-800">Change Password</h3>
+          <p className="text-xs text-gray-500 italic">
+            Secure your account with a strong password.
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Current Password */}
           <div className="space-y-2">
-            <Label className="text-xs font-medium text-gray-400">
+            <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
               Current Password
             </Label>
             <div className="relative">
               <Input
                 type={showCurrentPassword ? "text" : "password"}
-                defaultValue="**********"
-                className="h-12 bg-[#f0f4ef] border-gray-200 pr-10 focus-visible:ring-primary/20 focus-visible:border-primary rounded-lg text-gray-700 font-medium"
+                placeholder="Enter current password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                disabled={isPending}
+                className="h-12 bg-white border-gray-200 pr-10 focus-visible:ring-primary/20 focus-visible:border-primary rounded-lg text-gray-700 font-medium transition-all"
               />
               <button
                 type="button"
@@ -45,14 +109,17 @@ export default function ChangePassword() {
 
           {/* New Password */}
           <div className="space-y-2">
-            <Label className="text-xs font-medium text-gray-400">
+            <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
               New Password
             </Label>
             <div className="relative">
               <Input
                 type={showNewPassword ? "text" : "password"}
-                defaultValue="**********"
-                className="h-12 bg-[#f0f4ef] border-gray-200 pr-10 focus-visible:ring-primary/20 focus-visible:border-primary rounded-lg text-gray-700 font-medium"
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                disabled={isPending}
+                className="h-12 bg-white border-gray-200 pr-10 focus-visible:ring-primary/20 focus-visible:border-primary rounded-lg text-gray-700 font-medium transition-all"
               />
               <button
                 type="button"
@@ -66,14 +133,17 @@ export default function ChangePassword() {
 
           {/* Confirm New Password */}
           <div className="space-y-2">
-            <Label className="text-xs font-medium text-gray-400">
+            <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
               Confirm New Password
             </Label>
             <div className="relative">
               <Input
                 type={showConfirmPassword ? "text" : "password"}
-                defaultValue="**********"
-                className="h-12 bg-[#f0f4ef] border-gray-200 pr-10 focus-visible:ring-primary/20 focus-visible:border-primary rounded-lg text-gray-700 font-medium"
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={isPending}
+                className="h-12 bg-white border-gray-200 pr-10 focus-visible:ring-primary/20 focus-visible:border-primary rounded-lg text-gray-700 font-medium transition-all"
               />
               <button
                 type="button"
@@ -89,18 +159,34 @@ export default function ChangePassword() {
         {/* Action Buttons */}
         <div className="flex justify-end items-center gap-4 pt-4">
           <Button
+            type="button"
             variant="outline"
-            className="border-[#f0c3c3] text-[#d93025] hover:bg-red-50 hover:text-[#d93025] flex items-center gap-2 h-11 px-8 font-semibold rounded-lg shadow-sm transition-all"
+            onClick={handleCancel}
+            disabled={isPending}
+            className="border-red-100 text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 h-11 px-8 font-semibold rounded-lg shadow-sm transition-all cursor-pointer"
           >
             <X size={18} />
             Cancel
           </Button>
-          <Button className="bg-[#6A994E] hover:bg-[#5a8342] text-white flex items-center gap-2 h-11 px-8 font-semibold rounded-lg shadow-sm transition-all transform active:scale-95">
-            <Save size={18} />
-            Save
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="bg-[#6A994E] hover:bg-[#5a8342] text-white flex items-center gap-2 h-11 px-8 font-semibold rounded-lg shadow-sm transition-all transform active:scale-95 cursor-pointer min-w-[140px]"
+          >
+            {isPending ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Updating...
+              </>
+            ) : (
+              <>
+                <Save size={18} />
+                Save Changes
+              </>
+            )}
           </Button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
