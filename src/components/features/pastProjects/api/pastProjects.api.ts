@@ -39,7 +39,7 @@ export const updatePastProject = async (
   id: string,
   formData: FormData,
 ): Promise<PastProjectResponse> => {
-  const response = await axiosInstance.patch(`/past-projects/${id}`, formData, {
+  const response = await axiosInstance.put(`/past-projects/${id}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
