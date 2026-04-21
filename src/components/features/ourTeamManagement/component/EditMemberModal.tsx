@@ -24,6 +24,7 @@ import {
   Briefcase,
   Type,
   ImageIcon,
+  Mail,
   History,
   Sparkles,
 } from "lucide-react";
@@ -159,6 +160,7 @@ export default function EditMemberModal({
 }: EditMemberModalProps) {
   const [name, setName] = useState(member?.name ?? "");
   const [role, setRole] = useState(member?.role ?? "");
+  const [email, setEmail] = useState(member?.email ?? "");
   const [description, setDescription] = useState(member?.description ?? "");
   const [imageState, setImageState] = useState<ImageState>({
     file: null,
@@ -181,6 +183,7 @@ export default function EditMemberModal({
     const formData = new FormData();
     formData.append("name", name);
     formData.append("role", role);
+    formData.append("email", email);
     formData.append("description", description);
 
     if (imageState.file) {
@@ -266,6 +269,24 @@ export default function EditMemberModal({
                     placeholder="e.g. Senior Backend Architect"
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
+                    className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200 rounded-xl bg-white shadow-sm transition-all text-base"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="edit-email"
+                    className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                  >
+                    <Mail size={16} className="text-gray-400" />
+                    Email Address (Optional)
+                  </Label>
+                  <Input
+                    id="edit-email"
+                    type="email"
+                    placeholder="e.g. alexander@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200 rounded-xl bg-white shadow-sm transition-all text-base"
                   />
                 </div>

@@ -31,7 +31,7 @@ const navigation = [
     icon: ShoppingBasket,
   },
   {
-    name: "Service Management",
+    name: "Floor Plans/ Services",
     href: "/service-management",
     icon: BowArrow
   },

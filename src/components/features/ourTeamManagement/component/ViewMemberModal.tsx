@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { TeamMember } from "../types/ourTeamManagement.types";
 import Image from "next/image";
+import { Mail } from "lucide-react";
 
 interface ViewMemberModalProps {
   readonly member: TeamMember | null;
@@ -67,8 +68,16 @@ export default function ViewMemberModal({
                 <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight capitalize">
                   {member.name}
                 </h2>
-                <div className="flex items-center gap-2 text-primary font-bold uppercase tracking-widest text-sm">
-                  {member.role}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-primary font-bold uppercase tracking-widest text-sm">
+                    {member.role}
+                  </div>
+                  {member.email && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600 font-medium bg-gray-50 px-3 py-1.5 rounded-lg w-fit">
+                      <Mail size={14} className="text-primary/60" />
+                      {member.email}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
                   <span>Joined on</span>
