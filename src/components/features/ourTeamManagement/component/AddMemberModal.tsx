@@ -24,6 +24,7 @@ import {
   Briefcase,
   Type,
   ImageIcon,
+  Mail,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -132,6 +133,7 @@ export default function AddMemberModal({
 }: AddMemberModalProps) {
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
+  const [email, setEmail] = useState("");
   const [description, setDescription] = useState("");
   const [imageState, setImageState] = useState<ImageState>({
     file: null,
@@ -143,6 +145,7 @@ export default function AddMemberModal({
   const resetForm = () => {
     setName("");
     setRole("");
+    setEmail("");
     setDescription("");
     setImageState({ file: null, preview: "" });
   };
@@ -158,6 +161,7 @@ export default function AddMemberModal({
     const formData = new FormData();
     formData.append("name", name);
     formData.append("role", role);
+    formData.append("email", email);
     formData.append("description", description);
     formData.append("image", imageState.file);
 
@@ -244,6 +248,27 @@ export default function AddMemberModal({
                   />
                   <p className="text-[10px] text-gray-400">
                     Main designation within the company.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="email"
+                    className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                  >
+                    <Mail size={16} className="text-gray-400" />
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="e.g. alexander@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-12 focus-visible:ring-primary/20 focus-visible:border-primary border-gray-200 rounded-xl bg-white shadow-sm transition-all text-base"
+                  />
+                  <p className="text-[10px] text-gray-400">
+                    Professional email address (Optional).
                   </p>
                 </div>
               </div>

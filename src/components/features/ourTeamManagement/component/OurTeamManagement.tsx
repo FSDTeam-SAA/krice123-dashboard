@@ -115,6 +115,9 @@ export default function OurTeamManagement() {
                   Role
                 </th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700">
+                  Email
+                </th>
+                <th className="px-6 py-4 text-sm font-semibold text-gray-700">
                   Bio Snippet
                 </th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700 text-center">
@@ -139,6 +142,9 @@ export default function OurTeamManagement() {
                       <Skeleton className="h-4 w-24" />
                     </td>
                     <td className="px-6 py-4">
+                      <Skeleton className="h-4 w-32" />
+                    </td>
+                    <td className="px-6 py-4">
                       <Skeleton className="h-4 w-40" />
                     </td>
                     <td className="px-6 py-4 text-center">
@@ -154,7 +160,7 @@ export default function OurTeamManagement() {
                   {data?.data.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={6}
+                        colSpan={7}
                         className="px-6 py-10 text-center text-gray-500"
                       >
                         No team members found.
@@ -183,6 +189,9 @@ export default function OurTeamManagement() {
                           <span className="bg-primary/5 text-primary px-2 py-1 rounded-md">
                             {item.role}
                           </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600 font-medium lowercase">
+                          {item.email}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-600 max-w-[250px]">
                           <div
